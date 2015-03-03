@@ -74,7 +74,13 @@
     [super viewWillAppear:animated];
 
     AppDelegateInstance.titleLabel.text = AppDelegateInstance.shopStr;
-//    [AppDelegateInstance.titleArray replaceObjectAtIndex:0 withObject:AppDelegateInstance.shopStr];
+
+    for (UIButton *btn in _buttonArray) {
+        if (btn.selected && btn.tag == 3) {
+            AppDelegateInstance.titleLabel.text = [AppDelegateInstance.titleArray objectAtIndex:btn.tag];
+            break;
+        }
+    }
 }
 
 - (void)changePlace {

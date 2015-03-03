@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		264CF5E51AA5FD5400D2C406 /* OfficialWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 264CF5E41AA5FD5400D2C406 /* OfficialWebViewController.m */; };
 		3A1E7A5E1A56591D002D8ECD /* Icon120.png in Resources */ = {isa = PBXBuildFile; fileRef = 3A1E7A5A1A56591D002D8ECD /* Icon120.png */; };
 		3A1E7A5F1A56591D002D8ECD /* Icon87.png in Resources */ = {isa = PBXBuildFile; fileRef = 3A1E7A5B1A56591D002D8ECD /* Icon87.png */; };
 		3A1E7A601A56591D002D8ECD /* Icon80.png in Resources */ = {isa = PBXBuildFile; fileRef = 3A1E7A5C1A56591D002D8ECD /* Icon80.png */; };
@@ -119,6 +120,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		264CF5E31AA5FD5400D2C406 /* OfficialWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OfficialWebViewController.h; sourceTree = "<group>"; };
+		264CF5E41AA5FD5400D2C406 /* OfficialWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OfficialWebViewController.m; sourceTree = "<group>"; };
 		3A1E7A5A1A56591D002D8ECD /* Icon120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon120.png; sourceTree = "<group>"; };
 		3A1E7A5B1A56591D002D8ECD /* Icon87.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon87.png; sourceTree = "<group>"; };
 		3A1E7A5C1A56591D002D8ECD /* Icon80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon80.png; sourceTree = "<group>"; };
@@ -456,6 +459,8 @@
 				3A545FEE1A79E055009D91F4 /* ShowContentVC.m */,
 				3A545FF01A79E07C009D91F4 /* LeagueVC.h */,
 				3A545FF11A79E07C009D91F4 /* LeagueVC.m */,
+				264CF5E31AA5FD5400D2C406 /* OfficialWebViewController.h */,
+				264CF5E41AA5FD5400D2C406 /* OfficialWebViewController.m */,
 			);
 			name = Start;
 			sourceTree = "<group>";
@@ -826,6 +831,7 @@
 				3ABE79451A5191F80053CC7E /* StartFourthView.m in Sources */,
 				3AB9C60B1A53CF0B0064FD1C /* MJRefreshBaseView.m in Sources */,
 				3AB9C6341A53CF280064FD1C /* AFHTTPRequestOperation.m in Sources */,
+				264CF5E51AA5FD5400D2C406 /* OfficialWebViewController.m in Sources */,
 				3A5D8BFC1A541C2A00614939 /* CXHTMLDocument.m in Sources */,
 				3A5D8C021A541C2A00614939 /* CXMLNamespaceNode.m in Sources */,
 				3AB9C6391A53CF280064FD1C /* AFURLConnectionOperation.m in Sources */,

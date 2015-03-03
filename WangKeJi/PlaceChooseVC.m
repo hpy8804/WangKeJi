@@ -13,7 +13,9 @@
 #import "MJRefresh.h"
 
 @interface PlaceChooseVC ()
-
+{
+    NSIndexPath *_curIndexPath;
+}
 @end
 
 @implementation PlaceChooseVC
@@ -92,13 +94,29 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    AppDelegateInstance.startVC.currentPlace = indexPath.row;
-    AppDelegateInstance.shopStr = [[AppDelegateInstance.placeArray objectAtIndex:indexPath.row] objectForKey:@"shopname"];
-    AppDelegateInstance.titleLabel.text = AppDelegateInstance.shopStr;
-    [AppDelegateInstance.titleArray replaceObjectAtIndex:0 withObject:AppDelegateInstance.shopStr];
-    AppDelegateInstance.shopID = [[AppDelegateInstance.placeArray objectAtIndex:indexPath.row] objectForKey:@"id"];
-    [[(StartFirstView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:0] tableView] headerBeginRefreshing];
-    [self.navigationController popViewControllerAnimated:YES];
+    _curIndexPath = indexPath;
+    
+    NSString *strTipMsg = [NSString stringWithFormat:@"确定要进入%@吗?",[[AppDelegateInstance.placeArray objectAtIndex:indexPath.row] objectForKey:@"shopname"]];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示"
+                                                        message:strTipMsg
+                                                       delegate:self
+                                              cancelButtonTitle:@"取消"
+                                              otherButtonTitles:@"确定", nil];
+    [alertView show];
+}
+
+#pragma mark - UIAlertView delegate methods
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 1) {
+        AppDelegateInstance.startVC.currentPlace = _curIndexPath.row;
+        AppDelegateInstance.shopStr = [[AppDelegateInstance.placeArray objectAtIndex:_curIndexPath.row] objectForKey:@"shopname"];
+        AppDelegateInstance.titleLabel.text = AppDelegateInstance.shopStr;
+        [AppDelegateInstance.titleArray replaceObjectAtIndex:0 withObject:AppDelegateInstance.shopStr];
+        AppDelegateInstance.shopID = [[AppDelegateInstance.placeArray objectAtIndex:_curIndexPath.row] objectForKey:@"id"];
+        [[(StartFirstView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:0] tableView] headerBeginRefreshing];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 @end

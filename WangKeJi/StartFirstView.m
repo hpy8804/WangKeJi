@@ -206,7 +206,7 @@
 
         UITextView * headerTV = [[UITextView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 60)];
         [headerTV setFont:[UIFont systemFontOfSize:20.0f]];
-        headerTV.text = @"门店营业时间:上午09:00-晚上21:00[APP订单请于19:30之前下单]";
+        headerTV.text = @"门店营业时间:上午09:00-晚上21:00";
         [headerTV setTextAlignment:NSTextAlignmentCenter];
         headerTV.userInteractionEnabled = NO;
         [headerTV setBackgroundColor:[UIColor colorWithRed:1 green:239/255.0 blue:134/255.0 alpha:0.5]];
