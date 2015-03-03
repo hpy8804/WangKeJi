@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>797F194E-17E3-4B14-9C7B-16D7A95BF91C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>WangKeJi</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>870CD0BB9DE9E9624B8AD3F22CC26F3B18788F68</key>
+		<string>https://github.com/hpy8804/WangKeJi.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>WangKeJi.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>870CD0BB9DE9E9624B8AD3F22CC26F3B18788F68</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/hpy8804/WangKeJi.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>870CD0BB9DE9E9624B8AD3F22CC26F3B18788F68</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>870CD0BB9DE9E9624B8AD3F22CC26F3B18788F68</string>
+			<key>IDESourceControlWCCName</key>
+			<string>WangKeJi</string>
+		</dict>
+	</array>
+</dict>
+</plist>
