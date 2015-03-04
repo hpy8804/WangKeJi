@@ -121,7 +121,7 @@
 -(void)finishSuccessRequest:(NSString*)xml {
     NSData * data = [xml dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary * dataDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-    if ([[dataDic objectForKey:@"status"] isEqualToString:@"true"]) {
+    if ([dataDic objectForKey:@"status"]) {
         [self.view.window showHUDWithText:@"绑定成功" Type:ShowPhotoNo Enabled:YES];
     }
 }
