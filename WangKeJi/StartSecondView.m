@@ -15,6 +15,16 @@
 #import "StartVC.h"
 #import "StartThirdView.h"
 
+#define kStr_UserName @"shopping_username"
+#define kStr_Address @"shopping_address"
+#define kStr_Phone @"shopping_phone"
+
+@interface StartSecondView ()
+{
+    NSArray *_arrUseInfo;
+}
+@end
+
 @implementation StartSecondView
 
 - (id)initWithFrame:(CGRect)frame {
@@ -29,6 +39,20 @@
         _cellArray = [[NSMutableArray alloc]init];
 
         _userArray = [NSArray arrayWithObjects:@"收货人姓名", @"地址", @"电话", nil];
+        
+        NSString *strUsername = [[NSUserDefaults standardUserDefaults]objectForKey:kStr_UserName];
+        if ([strUsername length] == 0) {
+            strUsername = @"";
+        }
+        NSString *strAddress = [[NSUserDefaults standardUserDefaults]objectForKey:kStr_Address];
+        if ([strAddress length] == 0) {
+            strAddress = @"";
+        }
+        NSString *strPhone = [[NSUserDefaults standardUserDefaults]objectForKey:kStr_Phone];
+        if ([strPhone length] == 0) {
+            strPhone = @"";
+        }
+        _arrUseInfo = @[strUsername, strAddress, strPhone];
 
         [self setBackgroundColor:[UIColor colorWithWhite:235/255.0f alpha:1.0]];
 
@@ -89,6 +113,12 @@
 - (void)doneInput {
     for (UserCell * cell in _cellArray) {
         [cell.textField resignFirstResponder];
+        
+        NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+        [userDefault setObject:[[[_cellArray objectAtIndex:0]textField]text] forKey:kStr_UserName];
+        [userDefault setObject:[[[_cellArray objectAtIndex:1]textField]text] forKey:kStr_Address];
+        [userDefault setObject:[[[_cellArray objectAtIndex:2]textField]text] forKey:kStr_Phone];
+        [userDefault synchronize];
     }
 }
 
@@ -194,6 +224,7 @@
 }
 
 - (void)deleteButtonClicked:(UIButton*)button {
+    [self.window showHUDWithText:@"取消成功" Type:ShowPhotoYes Enabled:YES];
     [_foodArray removeObjectAtIndex:button.tag];
     [AppDelegateInstance.foodNumberArray removeObjectAtIndex:button.tag];
     [self setAllPrice];
@@ -211,6 +242,9 @@
         NSString * bossname = [dataDic objectForKey:@"bossname"];
         NSString * order_id = [dataDic objectForKey:@"orderid"];
         [AppDelegateInstance.socket writeData:[OUT_ORDER_FROM_STR(bossname, order_id) dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:202];
+        
+        //跳转到订单列表
+        
     }
     else {
 //        [self.window showHUDWithText:@"提交失败" Type:ShowPhotoYes Enabled:YES];
@@ -248,6 +282,7 @@
             [cell.textField setKeyboardType:UIKeyboardTypeNumberPad];
         }
         cell.textField.placeholder = [_userArray objectAtIndex:indexPath.row];
+        cell.textField.text = _arrUseInfo[indexPath.row];
         [cell.textField setInputAccessoryView:_topView];
 
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
