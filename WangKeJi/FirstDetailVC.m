@@ -103,8 +103,31 @@
     [mutableDic setObject:[NSString stringWithFormat:@"%li",(long)[_segmentedControl selectedSegmentIndex]] forKey:@"taste"];
     NSDictionary * dic = [NSDictionary dictionaryWithDictionary:mutableDic];
 
-    [AppDelegateInstance.foodNumberArray addObject:@"1"];
-    [[(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodArray]addObject:[dic copy]];
+    //对foodArray数据进行整理
+    NSMutableArray *arrForFood = [(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodArray];
+    BOOL bIsFound = NO;
+    int indexFound = 0;
+    for (int i = 0; i < arrForFood.count; i++) {
+        NSDictionary *subDic = arrForFood[i];
+        if ([subDic[@"id"] isEqualToString:dic[@"id"]] &&
+            [subDic[@"taste"] isEqualToString:dic[@"taste"]]) {
+            indexFound = i;
+            bIsFound = YES;
+            break;
+        }
+    }
+    
+    if (bIsFound) {
+        //同种商品，同种口味则放在一起
+        NSInteger nCount = [AppDelegateInstance.foodNumberArray[indexFound] integerValue]+1;
+        [AppDelegateInstance.foodNumberArray replaceObjectAtIndex:indexFound withObject:[NSString stringWithFormat:@"%d", nCount]];
+    }else{
+        [AppDelegateInstance.foodNumberArray addObject:@"1"];
+        [arrForFood addObject:[dic copy]];
+    }
+
+
+
     [[(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodTableView]reloadData];
 
     [self.view.window showHUDWithText:@"已加入购物车" Type:ShowPhotoNo Enabled:YES];
