@@ -45,7 +45,7 @@
         topBorder.backgroundColor = [UIColor colorWithWhite:210/255.0f alpha:1.0f].CGColor;
         [_userTableView.layer addSublayer:topBorder];
 
-        _foodTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, _userTableView.frame.origin.y + _userTableView.frame.size.height + 20, ScreenWidth, ScreenHeight - 20 - 60 - 40 -(_userTableView.frame.origin.y + _userTableView.frame.size.height + 20))];
+        _foodTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, _userTableView.frame.origin.y + _userTableView.frame.size.height + 20, ScreenWidth, ScreenHeight - 20 - 60 - 40 -(_userTableView.frame.origin.y + _userTableView.frame.size.height + 20 + 40))];
         _foodTableView.dataSource = self;
         [_foodTableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
         _foodTableView.delegate = self;
@@ -260,10 +260,9 @@
 
         if (cell == nil) {
             cell = [[FootCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentify];
-
-            if (indexPath.row + 1 == [_foodArray count]) {
-                [self setAllPrice];
-            }
+        }
+        if (indexPath.row + 1 == [_foodArray count]) {
+            [self setAllPrice];
         }
 
         cell.footImageView.image = [AppDelegateInstance load_image:[NSString stringWithFormat:@"%@%@",IMAGE_HEADER_URL,[[_foodArray objectAtIndex:indexPath.row] objectForKey:@"img_url"]]];
@@ -279,6 +278,8 @@
 
         cell.tasteLabel.text = [NSString stringWithFormat:@"口味:%@",[AppDelegateInstance.tasteArray objectAtIndex:[[[_foodArray objectAtIndex:indexPath.row] objectForKey:@"taste"] integerValue]]];
         cell.tasteLabel.hidden = NO;
+        
+        cell.numberTF.text = [AppDelegateInstance.foodNumberArray objectAtIndex:indexPath.row];
 
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
