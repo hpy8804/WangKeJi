@@ -204,8 +204,8 @@
 
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentify];
 
-        UITextView * headerTV = [[UITextView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 60)];
-        [headerTV setFont:[UIFont systemFontOfSize:20.0f]];
+        UILabel * headerTV = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 60)];
+        [headerTV setFont:[UIFont systemFontOfSize:18.0f]];
         headerTV.text = @"门店营业时间:上午09:00-晚上21:00";
         [headerTV setTextAlignment:NSTextAlignmentCenter];
         headerTV.userInteractionEnabled = NO;

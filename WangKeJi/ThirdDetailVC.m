@@ -12,10 +12,27 @@
 #import "UIWindow+YzdHUD.h"
 
 @interface ThirdDetailVC ()<UITableViewDataSource,UITableViewDelegate>
-
+{
+    UIButton *confirmOrderButton;
+}
 @end
 
 @implementation ThirdDetailVC
+
+- (UIImage*)imageWithColor:(UIColor*)color
+{
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -34,10 +51,11 @@
     _dataDic = [NSDictionary dictionary];
 
     _helper = [[ServiceHelper alloc] initWithDelegate:self];
-    _helper1 = [[ServiceHelper alloc] initWithDelegate:self];
+    _helper1 = [[ServiceHelper alloc] initWithDelegate:nil];
 
-    UIButton * confirmOrderButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 10, ScreenWidth - 20, 40)];
-    [confirmOrderButton setBackgroundColor:[UIColor colorWithRed:239/255.0 green:150/255.0 blue:26/255.0 alpha:1.0]];
+    confirmOrderButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 10, ScreenWidth - 20, 40)];
+    [confirmOrderButton setBackgroundImage:[self imageWithColor:[UIColor colorWithRed:239/255.0 green:150/255.0 blue:26/255.0 alpha:1.0]] forState:UIControlStateNormal];
+    [confirmOrderButton setBackgroundImage:[self imageWithColor:[UIColor lightGrayColor]] forState:UIControlStateDisabled];
     [confirmOrderButton addTarget:self action:@selector(confirmOrderButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [confirmOrderButton setTitle:@"确认订单" forState:UIControlStateNormal];
     [self.view addSubview:confirmOrderButton];
@@ -95,56 +113,62 @@
 
 #pragma mark - ServiceHelperDelegate
 -(void)finishSuccessRequest:(NSString*)xml {
-    NSData * data = [xml dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary * dataDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-    _dataDic = [NSDictionary dictionaryWithDictionary:[[NSArray arrayWithArray:[dataDic objectForKey:@"data"]] objectAtIndex:0]];
-    NSArray * paymentArray = [NSArray arrayWithObjects:@"待确认", @"已确认", nil];
-    _tableDataArray = [NSArray arrayWithObjects:
-                       [_dataDic objectForKey:@"order_no"],
-                       [_dataDic objectForKey:@"accept_name"],
-                       [_dataDic objectForKey:@"address"],
-                       [_dataDic objectForKey:@"mobile"],
-                       [paymentArray objectAtIndex:[[_dataDic objectForKey:@"payment_status"] integerValue]],
-                       @"",
-                       @"",
-                       [_dataDic objectForKey:@"order_amount"], nil];
-    [_tableView reloadData];
-    NSDictionary * orderDic = [[_dataDic objectForKey:@"order_goods"] objectAtIndex:0];
-
-    NSString * imageURL = [NSString stringWithFormat:@"%@%@",IMAGE_HEADER_URL,[orderDic objectForKey:@"img_url"]];
-    if ([AppDelegateInstance.imageDic objectForKey:[orderDic objectForKey:@"img_url"]]) {
-        _cell.footImageView.image = [UIImage imageWithData:[AppDelegateInstance.imageDic objectForKey:[orderDic objectForKey:@"img_url"]]];
-    }
-    else {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
-            UIImage * image = [UIImage imageWithData:data];
-            if (image) {
-                [AppDelegateInstance.imageDic setObject:data forKey:imageURL];
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
+    if ([xml containsString:@"确认订单完成成功"]) {
+        [confirmOrderButton setTitle:@"已确认" forState:UIControlStateNormal];
+        confirmOrderButton.enabled = NO;
+    }else{
+        NSData * data = [xml dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary * dataDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+        _dataDic = [NSDictionary dictionaryWithDictionary:[[NSArray arrayWithArray:[dataDic objectForKey:@"data"]] objectAtIndex:0]];
+        NSArray * paymentArray = [NSArray arrayWithObjects:@"待确认", @"已确认", nil];
+        _tableDataArray = [NSArray arrayWithObjects:
+                           [_dataDic objectForKey:@"order_no"],
+                           [_dataDic objectForKey:@"accept_name"],
+                           [_dataDic objectForKey:@"address"],
+                           [_dataDic objectForKey:@"mobile"],
+                           [paymentArray objectAtIndex:[[_dataDic objectForKey:@"payment_status"] integerValue]],
+                           @"",
+                           @"",
+                           [_dataDic objectForKey:@"order_amount"], nil];
+        [_tableView reloadData];
+        NSDictionary * orderDic = [[_dataDic objectForKey:@"order_goods"] objectAtIndex:0];
+        
+        NSString * imageURL = [NSString stringWithFormat:@"%@%@",IMAGE_HEADER_URL,[orderDic objectForKey:@"img_url"]];
+        if ([AppDelegateInstance.imageDic objectForKey:[orderDic objectForKey:@"img_url"]]) {
+            _cell.footImageView.image = [UIImage imageWithData:[AppDelegateInstance.imageDic objectForKey:[orderDic objectForKey:@"img_url"]]];
+        }
+        else {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
+                UIImage * image = [UIImage imageWithData:data];
                 if (image) {
-                    _cell.footImageView.image = image;
+                    [AppDelegateInstance.imageDic setObject:data forKey:imageURL];
                 }
-
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (image) {
+                        _cell.footImageView.image = image;
+                    }
+                    
+                });
             });
-        });
+        }
+        
+        _cell.titleLabel.text = [orderDic objectForKey:@"goods_title"];
+        
+        _cell.priceLabel.text = [NSString stringWithFormat:@"$%@",[orderDic objectForKey:@"goods_price"]];
+        
+        _cell.numberTF.text = [NSString stringWithFormat:@"口味:%@",[AppDelegateInstance.tasteArray objectAtIndex:[[orderDic objectForKey:@"taste"] integerValue]]];
+        
+        UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth - 40 - 10, _cell.numberTF.frame.origin.y, 40, 20)];
+        [label setTextAlignment:NSTextAlignmentRight];
+        [_cell.contentView addSubview:label];
+        label.text = [NSString stringWithFormat:@"x%@",[orderDic objectForKey:@"quantity"]];
+        
+        _cell.addButton.hidden = YES;
+        _cell.reduceButton.hidden = YES;
+        _cell.deleteButton.hidden = YES;
     }
-
-    _cell.titleLabel.text = [orderDic objectForKey:@"goods_title"];
-
-    _cell.priceLabel.text = [NSString stringWithFormat:@"$%@",[orderDic objectForKey:@"goods_price"]];
-
-    _cell.numberTF.text = [NSString stringWithFormat:@"口味:%@",[AppDelegateInstance.tasteArray objectAtIndex:[[orderDic objectForKey:@"taste"] integerValue]]];
-
-    UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth - 40 - 10, _cell.numberTF.frame.origin.y, 40, 20)];
-    [label setTextAlignment:NSTextAlignmentRight];
-    [_cell.contentView addSubview:label];
-    label.text = [NSString stringWithFormat:@"x%@",[orderDic objectForKey:@"quantity"]];
-
-    _cell.addButton.hidden = YES;
-    _cell.reduceButton.hidden = YES;
-    _cell.deleteButton.hidden = YES;
+    
 }
 
 -(void)finishFailRequest:(NSError*)error {

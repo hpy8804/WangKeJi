@@ -244,6 +244,10 @@
         [AppDelegateInstance.socket writeData:[OUT_ORDER_FROM_STR(bossname, order_id) dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:202];
         
         //跳转到订单列表
+        [self removeFromSuperview];
+        UIButton * a = [[UIButton alloc]init];
+        a.tag = 2;
+        [AppDelegateInstance.startVC buttonClicked:a];
         
     }
     else {
