@@ -102,7 +102,29 @@
     NSMutableDictionary * mutableDic = [NSMutableDictionary dictionaryWithDictionary:_dataDic];
     [mutableDic setObject:[NSString stringWithFormat:@"%li",(long)[_segmentedControl selectedSegmentIndex]] forKey:@"taste"];
     NSDictionary * dic = [NSDictionary dictionaryWithDictionary:mutableDic];
+    
+    [self reAssignDate:dic];
 
+    [[(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodTableView]reloadData];
+
+    [self.view.window showHUDWithText:@"已加入购物车" Type:ShowPhotoNo Enabled:YES];
+}
+
+- (void)direct_buyButtonClicked {
+    NSMutableDictionary * mutableDic = [NSMutableDictionary dictionaryWithDictionary:_dataDic];
+    [mutableDic setObject:[NSString stringWithFormat:@"%li",(long)[_segmentedControl selectedSegmentIndex]] forKey:@"taste"];
+    NSDictionary * dic = [NSDictionary dictionaryWithDictionary:mutableDic];
+
+    [self reAssignDate:dic];
+    [[(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodTableView]reloadData];
+    [self.navigationController popViewControllerAnimated:YES];
+    UIButton * a = [[UIButton alloc]init];
+    a.tag = 1;
+    [AppDelegateInstance.startVC buttonClicked:a];
+}
+
+- (void)reAssignDate:(NSDictionary *)dic
+{
     //对foodArray数据进行整理
     NSMutableArray *arrForFood = [(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodArray];
     BOOL bIsFound = NO;
@@ -125,26 +147,6 @@
         [AppDelegateInstance.foodNumberArray addObject:@"1"];
         [arrForFood addObject:[dic copy]];
     }
-
-
-
-    [[(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodTableView]reloadData];
-
-    [self.view.window showHUDWithText:@"已加入购物车" Type:ShowPhotoNo Enabled:YES];
-}
-
-- (void)direct_buyButtonClicked {
-    NSMutableDictionary * mutableDic = [NSMutableDictionary dictionaryWithDictionary:_dataDic];
-    [mutableDic setObject:[NSString stringWithFormat:@"%li",(long)[_segmentedControl selectedSegmentIndex]] forKey:@"taste"];
-    NSDictionary * dic = [NSDictionary dictionaryWithDictionary:mutableDic];
-
-    [AppDelegateInstance.foodNumberArray addObject:@"1"];
-    [[(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodArray]addObject:[dic copy]];
-    [[(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodTableView]reloadData];
-    [self.navigationController popViewControllerAnimated:YES];
-    UIButton * a = [[UIButton alloc]init];
-    a.tag = 1;
-    [AppDelegateInstance.startVC buttonClicked:a];
 }
 
 #pragma mark - ServiceHelperDelegate

@@ -83,12 +83,17 @@
     static NSString * cellIdentify = @"footCell";
     FootCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
 
+    UILabel * label = nil;
     if (cell == nil) {
         cell = [[FootCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentify];
         cell.numberTF.layer.borderWidth = 0.0f;
         [cell.numberTF setFont:[UIFont systemFontOfSize:12.0f]];
         [cell.numberTF setFrame:CGRectMake(cell.titleLabel.frame.origin.x, cell.numberTF.frame.origin.y, cell.titleLabel.frame.size.width, cell.numberTF.frame.size.height)];
         [cell.numberTF setTextAlignment:NSTextAlignmentLeft];
+        
+        label = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth - 40 - 10, cell.numberTF.frame.origin.y, 40, 20)];
+        [label setTextAlignment:NSTextAlignmentRight];
+        [cell.contentView addSubview:label];
     }
 
     NSString * imageURL = [NSString stringWithFormat:@"%@%@",IMAGE_HEADER_URL,[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"img_url"]];
@@ -119,9 +124,6 @@
 
     cell.numberTF.text = [NSString stringWithFormat:@"口味:%@",[AppDelegateInstance.tasteArray objectAtIndex:[[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"taste"] integerValue]]];
 
-    UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth - 40 - 10, cell.numberTF.frame.origin.y, 40, 20)];
-    [label setTextAlignment:NSTextAlignmentRight];
-    [cell.contentView addSubview:label];
     label.text = [NSString stringWithFormat:@"x%@",[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"quantity"]];
 
     cell.addButton.hidden = YES;
