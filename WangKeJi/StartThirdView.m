@@ -11,6 +11,8 @@
 #import "FootCell.h"
 #import "ThirdDetailVC.h"
 
+#define kFont [UIFont systemFontOfSize:12.0f]
+
 @implementation StartThirdView
 
 - (id)initWithFrame:(CGRect)frame {
@@ -59,10 +61,7 @@
     NSData * data = [xml dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary * dataDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
     if ([[dataDic objectForKey:@"data"]isKindOfClass:[NSArray class]]) {
-        NSArray * allDataArray = [dataDic objectForKey:@"data"];
-        for (NSDictionary * dic in allDataArray) {
-            [_foodArray addObjectsFromArray:[dic objectForKey:@"order_goods"]];
-        }
+        _foodArray = [dataDic objectForKey:@"data"];
     }
     else {
 //        [self.window showHUDWithText:@"提交失败" Type:ShowPhotoYes Enabled:YES];
@@ -75,8 +74,12 @@
 }
 
 #pragma mark - UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return _foodArray.count;
+}
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [_foodArray count];
+    return [_foodArray[section][@"order_goods"] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -91,14 +94,25 @@
         [cell.numberTF setFrame:CGRectMake(cell.titleLabel.frame.origin.x, cell.numberTF.frame.origin.y, cell.titleLabel.frame.size.width, cell.numberTF.frame.size.height)];
         [cell.numberTF setTextAlignment:NSTextAlignmentLeft];
         
-        label = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth - 40 - 10, cell.numberTF.frame.origin.y, 40, 20)];
-        [label setTextAlignment:NSTextAlignmentRight];
-        [cell.contentView addSubview:label];
+        UIView *viewLine = [[UIView alloc] initWithFrame:CGRectMake(10, 79, 300, 1)];
+        viewLine.backgroundColor = [UIColor lightGrayColor];
+        [cell.contentView addSubview:viewLine];
     }
+    
+    for (UIView *subView in cell.contentView.subviews) {
+        if (subView.tag == 1010) {
+            [subView removeFromSuperview];
+        }
+    }
+    
+    label = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth - 40 - 10, cell.numberTF.frame.origin.y, 40, 20)];
+    label.tag = 1010;
+    [label setTextAlignment:NSTextAlignmentRight];
+    [cell.contentView addSubview:label];
 
-    NSString * imageURL = [NSString stringWithFormat:@"%@%@",IMAGE_HEADER_URL,[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"img_url"]];
-    if ([AppDelegateInstance.imageDic objectForKey:[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"img_url"]]) {
-        cell.footImageView.image = [UIImage imageWithData:[AppDelegateInstance.imageDic objectForKey:[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"img_url"]]];
+    NSString * imageURL = [NSString stringWithFormat:@"%@%@",IMAGE_HEADER_URL,_foodArray[indexPath.section][@"order_goods"][indexPath.row][@"img_url"]];
+    if ([AppDelegateInstance.imageDic objectForKey:[[_foodArray objectAtIndex:indexPath.section]objectForKey:@"img_url"]]) {
+        cell.footImageView.image = [UIImage imageWithData:[AppDelegateInstance.imageDic objectForKey:[[_foodArray objectAtIndex:indexPath.section]objectForKey:@"img_url"]]];
     }
     else {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -116,15 +130,18 @@
         });
     }
 
-    cell.tag = indexPath.row;
+    cell.tag = indexPath.section;
 
-    cell.titleLabel.text = [[_foodArray objectAtIndex:indexPath.row]objectForKey:@"goods_title"];
+    cell.titleLabel.text = _foodArray[indexPath.section][@"order_goods"][indexPath.row][@"goods_title"];
 
-    cell.priceLabel.text = [NSString stringWithFormat:@"$%@",[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"goods_price"]];
+    cell.priceLabel.text = [NSString stringWithFormat:@"¥ %@",_foodArray[indexPath.section][@"order_goods"][indexPath.row][@"goods_price"]];
+    cell.priceLabel.textColor = [UIColor orangeColor];
 
-    cell.numberTF.text = [NSString stringWithFormat:@"口味:%@",[AppDelegateInstance.tasteArray objectAtIndex:[[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"taste"] integerValue]]];
+    cell.numberTF.text = [NSString stringWithFormat:@"口味:%@",[AppDelegateInstance.tasteArray objectAtIndex:[_foodArray[indexPath.section][@"order_goods"][indexPath.row][@"taste"] integerValue]]];
 
-    label.text = [NSString stringWithFormat:@"x%@",[[_foodArray objectAtIndex:indexPath.row]objectForKey:@"quantity"]];
+    NSArray *arrGoods = _foodArray[indexPath.section][@"order_goods"];
+
+    label.text = [NSString stringWithFormat:@"%@%@", @"x",arrGoods[indexPath.row][@"quantity"]];
 
     cell.addButton.hidden = YES;
     cell.reduceButton.hidden = YES;
@@ -144,6 +161,72 @@
     ThirdDetailVC * thirdDetailVC = [[ThirdDetailVC alloc] init];
     thirdDetailVC.order_id = [[_foodArray objectAtIndex:indexPath.row] objectForKey:@"order_id"];
     [[self getViewController].navigationController pushViewController:thirdDetailVC animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 40;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 50;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *viewBack = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 40)];
+    UILabel *labelDate = [[UILabel alloc] initWithFrame:CGRectMake(4, 5, 160, 30)];
+    labelDate.text = [NSString stringWithFormat:@"订单日期:%@", _foodArray[section][@"add_time"]];
+    labelDate.font = kFont;
+    [viewBack addSubview:labelDate];
+    
+    UILabel *labelStatus = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(labelDate.frame)+5, 5, 50, 30)];
+    NSString *strStatus = nil;
+    if ([_foodArray[section][@"payment_status"] integerValue] == 1) {
+        strStatus = @"已确认";
+        labelStatus.textColor = [UIColor lightGrayColor];
+    }else{
+        strStatus = @"待确认";
+        labelStatus.textColor = [UIColor redColor];
+    }
+    labelStatus.textAlignment = NSTextAlignmentCenter;
+    labelStatus.text = strStatus;
+    labelStatus.font = kFont;
+    [viewBack addSubview:labelStatus];
+    
+    UILabel *labelCountPrice = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(labelStatus.frame)+5, 5, 60, 30)];
+    labelCountPrice.text = [NSString stringWithFormat:@"¥ %@", _foodArray[section][@"order_amount"]];
+    labelCountPrice.font = kFont;
+    labelCountPrice.textAlignment = NSTextAlignmentCenter;
+    labelCountPrice.textColor = [UIColor orangeColor];
+    [viewBack addSubview:labelCountPrice];
+    
+    UIView *viewLine = [[UIView alloc] initWithFrame:CGRectMake(10, 39, 300, 1)];
+    viewLine.backgroundColor = [UIColor lightGrayColor];
+    [viewBack addSubview:viewLine];
+    
+    viewBack.backgroundColor = [UIColor whiteColor];
+    
+    return viewBack;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+{
+    UIView *viewBack = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)];
+    UILabel *labelAddress = [[UILabel alloc] initWithFrame:CGRectMake(4, 10, 160, 30)];
+    labelAddress.text = [NSString stringWithFormat:@"地址：%@", _foodArray[section][@"address"]];
+    labelAddress.font = kFont;
+    [viewBack addSubview:labelAddress];
+    
+    
+    UIView *viewLine = [[UIView alloc] initWithFrame:CGRectMake(0, 46, 320, 4)];
+    viewLine.backgroundColor = [UIColor lightGrayColor];
+    [viewBack addSubview:viewLine];
+    
+    viewBack.backgroundColor = [UIColor whiteColor];
+    
+    return viewBack;
 }
 
 @end
