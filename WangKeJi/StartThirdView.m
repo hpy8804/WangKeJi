@@ -159,7 +159,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     ThirdDetailVC * thirdDetailVC = [[ThirdDetailVC alloc] init];
-    thirdDetailVC.order_id = [[_foodArray objectAtIndex:indexPath.row] objectForKey:@"order_id"];
+    thirdDetailVC.order_id = _foodArray[indexPath.section][@"order_goods"][indexPath.row][@"order_id"];
     [[self getViewController].navigationController pushViewController:thirdDetailVC animated:YES];
 }
 

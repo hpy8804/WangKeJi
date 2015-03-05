@@ -10,6 +10,7 @@
 #import "SoapHelper.h"
 #import "FootCell.h"
 #import "UIWindow+YzdHUD.h"
+#import "StartVC.h"
 
 @interface ThirdDetailVC ()<UITableViewDataSource,UITableViewDelegate>
 {
@@ -32,6 +33,15 @@
     UIGraphicsEndImageContext();
     
     return image;
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    UIButton * a = [[UIButton alloc]init];
+    a.tag = 2;
+    [AppDelegateInstance.startVC buttonClicked:a];
 }
 
 - (void)viewDidLoad {
@@ -60,22 +70,11 @@
     [confirmOrderButton setTitle:@"确认订单" forState:UIControlStateNormal];
     [self.view addSubview:confirmOrderButton];
 
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(10, confirmOrderButton.frame.origin.y + confirmOrderButton.frame.size.height + 10, ScreenWidth - 20, 240)];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(10, confirmOrderButton.frame.origin.y + confirmOrderButton.frame.size.height + 10, ScreenWidth - 20, (self.view.frame.size.height-(confirmOrderButton.frame.origin.y + confirmOrderButton.frame.size.height + 10)))];
     _tableView.dataSource = self;
     _tableView.delegate = self;
     [self.view addSubview:_tableView];
-
-    UIView * backCell = [[UIView alloc] initWithFrame:CGRectMake(10, _tableView.frame.origin.y + _tableView.frame.size.height + 10, ScreenWidth - 20, 80)];
-    [backCell setBackgroundColor:[UIColor whiteColor]];
-    [self.view addSubview:backCell];
-
-    _cell = [[FootCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
-    [_cell setFrame:CGRectMake(0, _tableView.frame.origin.y + _tableView.frame.size.height + 10, ScreenWidth - 20, 80)];
-    _cell.numberTF.layer.borderWidth = 0.0f;
-    [_cell.numberTF setFont:[UIFont systemFontOfSize:12.0f]];
-    [_cell.numberTF setFrame:CGRectMake(_cell.titleLabel.frame.origin.x, _cell.numberTF.frame.origin.y, _cell.titleLabel.frame.size.width, _cell.numberTF.frame.size.height)];
-    [_cell.numberTF setTextAlignment:NSTextAlignmentLeft];
-    [self.view addSubview:_cell];
+    _tableView.tableFooterView = [[UIView alloc] init];
 
     NSMutableArray *arr=[NSMutableArray array];
     [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:AppDelegateInstance.shopStr,@"database", nil]];
@@ -131,11 +130,63 @@
                            @"",
                            [_dataDic objectForKey:@"order_amount"], nil];
         [_tableView reloadData];
-        NSDictionary * orderDic = [[_dataDic objectForKey:@"order_goods"] objectAtIndex:0];
+    }
+    
+}
+
+-(void)finishFailRequest:(NSError*)error {
+    
+}
+
+#pragma mark - UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 2;
+}
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (section == 0) {
+        return [_tableDataArray count];
+    }else{
+        return [[_dataDic objectForKey:@"order_goods"] count];
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        static NSString * cellIdentify = @"cell";
+        UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
         
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentify];
+        }
+        
+        NSArray * keyArray = [NSArray arrayWithObjects:@"订单编号:", @"收货人:   ", @"地址:       ", @"联系方式:", @"订单状态:", @"外卖员:   ", @"发货时间:", @"总金额:   ", nil];
+        
+        cell.textLabel.text = [NSString stringWithFormat:@"%@%@",[keyArray objectAtIndex:indexPath.row],[_tableDataArray objectAtIndex:indexPath.row]];
+        
+        return cell;
+    }else{
+        static NSString *cellIndeit = @"cell2";
+
+        FootCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIndeit];
+        if (cell == nil) {
+            cell = [[FootCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIndeit];
+            cell.numberTF.layer.borderWidth = 0.0f;
+            [cell.numberTF setFont:[UIFont systemFontOfSize:12.0f]];
+            [cell.numberTF setFrame:CGRectMake(cell.titleLabel.frame.origin.x, cell.numberTF.frame.origin.y, cell.titleLabel.frame.size.width, cell.numberTF.frame.size.height)];
+            [cell.numberTF setTextAlignment:NSTextAlignmentLeft];
+            
+            [cell.priceLabel setTextAlignment:NSTextAlignmentCenter];
+            
+            cell.addButton.hidden = YES;
+            cell.reduceButton.hidden = YES;
+            cell.deleteButton.hidden = YES;
+        }
+        NSDictionary * orderDic = [[_dataDic objectForKey:@"order_goods"] objectAtIndex:indexPath.row];
+
         NSString * imageURL = [NSString stringWithFormat:@"%@%@",IMAGE_HEADER_URL,[orderDic objectForKey:@"img_url"]];
-        if ([AppDelegateInstance.imageDic objectForKey:[orderDic objectForKey:@"img_url"]]) {
-            _cell.footImageView.image = [UIImage imageWithData:[AppDelegateInstance.imageDic objectForKey:[orderDic objectForKey:@"img_url"]]];
+        if ([AppDelegateInstance.imageDic objectForKey:imageURL]) {
+            cell.footImageView.image = [UIImage imageWithData:[AppDelegateInstance.imageDic objectForKey:imageURL]];
         }
         else {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -146,58 +197,36 @@
                 }
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (image) {
-                        _cell.footImageView.image = image;
+                        cell.footImageView.image = image;
                     }
                     
                 });
             });
         }
         
-        _cell.titleLabel.text = [orderDic objectForKey:@"goods_title"];
+        cell.titleLabel.text = [orderDic objectForKey:@"goods_title"];
         
-        _cell.priceLabel.text = [NSString stringWithFormat:@"$%@",[orderDic objectForKey:@"goods_price"]];
+        cell.priceLabel.text = [NSString stringWithFormat:@"$%@",[orderDic objectForKey:@"goods_price"]];
         
-        _cell.numberTF.text = [NSString stringWithFormat:@"口味:%@",[AppDelegateInstance.tasteArray objectAtIndex:[[orderDic objectForKey:@"taste"] integerValue]]];
+        cell.numberTF.text = [NSString stringWithFormat:@"口味:%@",[AppDelegateInstance.tasteArray objectAtIndex:[[orderDic objectForKey:@"taste"] integerValue]]];
         
-        UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth - 40 - 10, _cell.numberTF.frame.origin.y, 40, 20)];
+        UILabel * label = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth - 80, 40, 40, 20)];
         [label setTextAlignment:NSTextAlignmentRight];
-        [_cell.contentView addSubview:label];
+        [cell.contentView addSubview:label];
         label.text = [NSString stringWithFormat:@"x%@",[orderDic objectForKey:@"quantity"]];
         
-        _cell.addButton.hidden = YES;
-        _cell.reduceButton.hidden = YES;
-        _cell.deleteButton.hidden = YES;
+        return cell;
     }
-    
-}
-
--(void)finishFailRequest:(NSError*)error {
-    
-}
-
-#pragma mark - UITableViewDataSource
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [_tableDataArray count];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString * cellIdentify = @"cell";
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentify];
-
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentify];
-    }
-
-    NSArray * keyArray = [NSArray arrayWithObjects:@"订单编号:", @"收货人:   ", @"地址:       ", @"联系方式:", @"订单状态:", @"外卖员:   ", @"发货时间:", @"总金额:   ", nil];
-
-    cell.textLabel.text = [NSString stringWithFormat:@"%@%@",[keyArray objectAtIndex:indexPath.row],[_tableDataArray objectAtIndex:indexPath.row]];
-
-    return cell;
+    return nil;
 }
 
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 30;
+    if (indexPath.section == 0) {
+        return 30;
+    }else{
+        return 80;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
