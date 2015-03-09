@@ -7,6 +7,7 @@
 //
 
 #import "ShowContentVC.h"
+#import "SoapHelper.h"
 
 @interface ShowContentVC ()
 
@@ -17,6 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    
     [self.view setBackgroundColor:[UIColor colorWithWhite:1.0f alpha:1.0f]];
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"< 返回" style:UIBarButtonItemStylePlain target:self action:@selector(backView)];
@@ -26,21 +28,46 @@
         self.automaticallyAdjustsScrollViewInsets = NO;
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
-
-    UILabel * firstLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0 + 20, ScreenWidth, 40)];
-    firstLabel.text = @"旺客基介绍 习近平";
-    [firstLabel setTextColor:[UIColor redColor]];
-    [firstLabel setTextAlignment:NSTextAlignmentCenter];
-    [self.view addSubview:firstLabel];
-
-    UILabel * secondLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, firstLabel.frame.origin.y + firstLabel.frame.size.height, ScreenWidth - 20, 200)];
-    secondLabel.text = AppDelegateInstance.jiameng;
-    secondLabel.numberOfLines = 0;
-    [self.view addSubview:secondLabel];
+    
+    _helper = [[ServiceHelper alloc]initWithDelegate:self];
+    NSString *soapMsg=[SoapHelper arrayToDefaultSoapMessage:nil methodName:@"GetContent"];
+    [_helper asynServiceMethod:@"GetContent" soapMessage:soapMsg];
+    
+    _webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth,  ScreenHeight - 64)];
+    _webView.delegate = self;
+    [self.view addSubview:_webView];
+    
+    _activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    [_activityIndicatorView setFrame:CGRectMake(0, 0, 35, 35)];
+    _activityIndicatorView.center = _webView.center;
+    _activityIndicatorView.hidesWhenStopped = YES;
+    [_webView addSubview:_activityIndicatorView];
 }
 
 - (void)backView {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+#pragma mark - ServiceHelperDelegate
+-(void)finishSuccessRequest:(NSString*)xml {
+    [_webView loadHTMLString:xml baseURL:nil];
+}
+
+-(void)finishFailRequest:(NSError*)error {
+
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+    [_activityIndicatorView startAnimating];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+}
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    [_activityIndicatorView stopAnimating];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
 @end

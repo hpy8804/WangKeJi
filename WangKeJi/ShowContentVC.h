@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ServiceHelper.h"
 
-@interface ShowContentVC : UIViewController
-
+@interface ShowContentVC : UIViewController<ServiceHelperDelegate, UIWebViewDelegate>
+@property (nonatomic, strong) ServiceHelper * helper;
+@property (nonatomic, strong) UIWebView *webView;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @end
