@@ -14,7 +14,7 @@
 
 @class StartVC;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate,AsyncSocketDelegate,ServiceHelperDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,AsyncSocketDelegate>
 
 @property (strong, nonatomic) StartVC * startVC;
 @property (strong, nonatomic) UIWindow * window;
@@ -28,16 +28,12 @@
 @property (strong, nonatomic) NSMutableArray * foodNumberArray;
 @property (strong, nonatomic) NSString * user_id;
 @property (strong, nonatomic) NSString * password;
-@property (strong, nonatomic) NSString * phone;
-@property (strong, nonatomic) NSString * jiameng;
-@property (strong, nonatomic) ServiceHelper * helper;
 @property (nonatomic, strong) NSMutableArray * titleArray;
 //@property (nonatomic, readonly) XMPPStream * xmppStream;
 //@property (nonatomic, strong) XMPPOutgoingFileTransfer * xmppSend;
 @property (strong, nonatomic) AsyncSocket * socket;
 //@property (strong, nonatomic) GCDAsyncSocket * gcdSocket;
 @property (assign, nonatomic) BOOL isLogined;
-@property (assign, nonatomic) BOOL isXmppConnected;
 @property(nonatomic,assign)BOOL isRegisterUser;
 //@property(nonatomic,strong,readonly)XMPPvCardTempModule * xmppvCardModule;
 //@property(nonatomic,strong,readonly)XMPPvCardAvatarModule * xmppvCardAvatarModule;

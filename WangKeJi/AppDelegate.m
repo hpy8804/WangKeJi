@@ -29,24 +29,6 @@
     [application setStatusBarHidden:NO];
     [application setStatusBarStyle:UIStatusBarStyleLightContent];
 
-    _helper = [[ServiceHelper alloc] initWithDelegate:self];
-
-    _phone = [[NSUserDefaults standardUserDefaults] objectForKey:@"phone"];
-    if (!_phone) {
-        _phone = @"40083321455";
-        [[NSUserDefaults standardUserDefaults] setObject:_phone forKey:@"phone"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-
-    _jiameng = [[NSUserDefaults standardUserDefaults] objectForKey:@"jiameng"];
-    if (!_jiameng) {
-        _jiameng = @"1、加盟商必须具有五年以上的服装零售经验 2、加盟商必须是一般纳税人。 3、加盟商必须是本地户籍 4、在当地最具影响力的大型商场，面积必须180平方米以上。 5、自有资金200万元以上。";
-        [[NSUserDefaults standardUserDefaults] setObject:_jiameng forKey:@"jiameng"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-
-    _isXmppConnected = NO;
-
     _isLogined = NO;
 
     if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_id"]) {
@@ -100,11 +82,6 @@
     [nav.navigationBar addSubview:_titleLabel];
 
     [_window makeKeyAndVisible];
-
-
-    NSMutableArray *arr=[NSMutableArray array];
-    NSString *soapMsg=[SoapHelper arrayToDefaultSoapMessage:arr methodName:@"GetContent"];
-    [_helper asynServiceMethod:@"GetContent" soapMessage:soapMsg];
 
     return YES;
 }
@@ -291,19 +268,5 @@
     }
 }
 
-#pragma mark - ServiceHelperDelegate
--(void)finishSuccessRequest:(NSString*)xml {
-    NSData * data = [xml dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary * dataDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-    _phone = [dataDic objectForKey:@"phone"];
-    _jiameng = [dataDic objectForKey:@"jiameng"];
-    [[NSUserDefaults standardUserDefaults] setObject:_phone forKey:@"phone"];
-    [[NSUserDefaults standardUserDefaults] setObject:_jiameng forKey:@"jiameng"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
--(void)finishFailRequest:(NSError*)error {
-
-}
 
 @end

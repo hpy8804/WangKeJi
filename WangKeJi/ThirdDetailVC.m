@@ -61,7 +61,7 @@
     _dataDic = [NSDictionary dictionary];
 
     _helper = [[ServiceHelper alloc] initWithDelegate:self];
-    _helper1 = [[ServiceHelper alloc] initWithDelegate:nil];
+    _helper1 = [[ServiceHelper alloc] initWithDelegate:self];
 
     confirmOrderButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 10, ScreenWidth - 20, 40)];
     [confirmOrderButton setBackgroundImage:[self imageWithColor:[UIColor colorWithRed:239/255.0 green:150/255.0 blue:26/255.0 alpha:1.0]] forState:UIControlStateNormal];

@@ -8,10 +8,11 @@
 
 #import "LeagueVC.h"
 #import "OfficialWebViewController.h"
+#import "AppDelegate.h"
 
 #define kBtnCalltag 100
 #define kBtnWebtag 200
-#define kStrCallNum AppDelegateInstance.phone
+#define kStrCallNum @"40083321455"
 #define kStrWebAddress @"www.wangkeji.com.cn"
 
 @interface LeagueVC ()
