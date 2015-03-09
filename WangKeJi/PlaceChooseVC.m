@@ -11,6 +11,7 @@
 #import "StartVC.h"
 #import "StartFirstView.h"
 #import "MJRefresh.h"
+#import "StartSecondView.h"
 
 @interface PlaceChooseVC ()
 {
@@ -115,6 +116,10 @@
         [AppDelegateInstance.titleArray replaceObjectAtIndex:0 withObject:AppDelegateInstance.shopStr];
         AppDelegateInstance.shopID = [[AppDelegateInstance.placeArray objectAtIndex:_curIndexPath.row] objectForKey:@"id"];
         [[(StartFirstView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:0] tableView] headerBeginRefreshing];
+        
+        //同时清除数据
+        [(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1] cleanAllGoods];
+        
         [self.navigationController popViewControllerAnimated:YES];
     }
 }

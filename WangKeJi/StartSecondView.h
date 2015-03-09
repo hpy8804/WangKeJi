@@ -25,5 +25,6 @@
 @property (nonatomic, strong) NSArray * shopcartParameterArray;
 
 - (void)setAllPrice;
+- (void)cleanAllGoods;
 
 @end

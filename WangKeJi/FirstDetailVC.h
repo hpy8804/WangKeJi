@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) UIButton * joinShoppingButton;
 @property (nonatomic, strong) UIButton * direct_buyButton;
+@property (nonatomic, strong) UIButton * enterShoppingCar;
 @property (nonatomic, strong) UISegmentedControl * segmentedControl;
 @property (nonatomic, strong) NSArray * detailArray;
 @property (nonatomic, assign) NSInteger row;

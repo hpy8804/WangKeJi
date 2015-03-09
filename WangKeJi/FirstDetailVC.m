@@ -67,19 +67,25 @@
     [_tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [self.view addSubview:_tableView];
 
-    _joinShoppingButton = [[UIButton alloc]initWithFrame:CGRectMake(0, ScreenHeight - 40 - HEIGHT_VIEW_IOS6, ScreenWidth / 2, 40)];
+    _joinShoppingButton = [[UIButton alloc]initWithFrame:CGRectMake(0, ScreenHeight - 40 - HEIGHT_VIEW_IOS6, ScreenWidth / 3, 40)];
     [_joinShoppingButton setBackgroundColor:[UIColor colorWithRed:239/255.0 green:150/255.0 blue:26/255.0 alpha:1.0]];
     [_joinShoppingButton setTitle:@"加入购物车" forState:UIControlStateNormal];
     [_joinShoppingButton addTarget:self action:@selector(joinShoppingButtonClicked) forControlEvents:UIControlEventTouchUpInside];
 //    _joinShoppingButton.layer.cornerRadius = 5.0f;
     [self.view addSubview:_joinShoppingButton];
 
-    _direct_buyButton = [[UIButton alloc]initWithFrame:CGRectMake(_joinShoppingButton.frame.origin.x + _joinShoppingButton.frame.size.width, ScreenHeight - 40 - HEIGHT_VIEW_IOS6, ScreenWidth / 2, 40)];
+    _direct_buyButton = [[UIButton alloc]initWithFrame:CGRectMake(_joinShoppingButton.frame.origin.x + _joinShoppingButton.frame.size.width, ScreenHeight - 40 - HEIGHT_VIEW_IOS6, ScreenWidth / 3, 40)];
     [_direct_buyButton setBackgroundColor:[UIColor colorWithRed:239/255.0 green:150/255.0 blue:26/255.0 alpha:1.0]];
     [_direct_buyButton setTitle:@"直接购买" forState:UIControlStateNormal];
     [_direct_buyButton addTarget:self action:@selector(direct_buyButtonClicked) forControlEvents:UIControlEventTouchUpInside];
 //    _direct_buyButton.layer.cornerRadius = 5.0f;
     [self.view addSubview:_direct_buyButton];
+    
+    _enterShoppingCar = [[UIButton alloc]initWithFrame:CGRectMake(_direct_buyButton.frame.origin.x + _direct_buyButton.frame.size.width, ScreenHeight - 40 - HEIGHT_VIEW_IOS6, ScreenWidth / 3, 40)];
+    [_enterShoppingCar setBackgroundColor:[UIColor colorWithRed:239/255.0 green:150/255.0 blue:26/255.0 alpha:1.0]];
+    [_enterShoppingCar setTitle:@"查看购物车" forState:UIControlStateNormal];
+    [_enterShoppingCar addTarget:self action:@selector(checkShoppingCar) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:_enterShoppingCar];
 
     _segmentedControl = [[UISegmentedControl alloc]initWithItems:AppDelegateInstance.tasteArray];
     [_segmentedControl setFrame:CGRectMake(100, 5, ScreenWidth - 100 - 50, 30)];
@@ -118,6 +124,15 @@
     [self reAssignDate:dic];
     [[(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1]foodTableView]reloadData];
     [self.navigationController popViewControllerAnimated:YES];
+    UIButton * a = [[UIButton alloc]init];
+    a.tag = 1;
+    [AppDelegateInstance.startVC buttonClicked:a];
+}
+
+- (void)checkShoppingCar
+{
+    [self.navigationController popViewControllerAnimated:YES];
+    
     UIButton * a = [[UIButton alloc]init];
     a.tag = 1;
     [AppDelegateInstance.startVC buttonClicked:a];

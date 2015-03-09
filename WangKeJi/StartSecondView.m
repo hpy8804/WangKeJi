@@ -231,6 +231,14 @@
     [_foodTableView reloadData];
 }
 
+- (void)cleanAllGoods
+{
+    [_foodArray removeAllObjects];
+    [AppDelegateInstance.foodNumberArray removeAllObjects];
+    [self setAllPrice];
+    [_foodTableView reloadData];
+}
+
 #pragma mark - ServiceHelperDelegate
 -(void)finishSuccessRequest:(NSString*)xml {
     NSLog(@"%@",AppDelegateInstance.user_id);
@@ -238,6 +246,8 @@
     NSDictionary * dataDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
     if ([dataDic objectForKey:@"status"]) {
         [self.window showHUDWithText:@"提交成功" Type:ShowPhotoYes Enabled:YES];
+        //同时清除数据
+        [(StartSecondView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:1] cleanAllGoods];
         [(StartThirdView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:2] asynService];
         NSString * bossname = [dataDic objectForKey:@"bossname"];
         NSString * order_id = [dataDic objectForKey:@"orderid"];
