@@ -41,12 +41,12 @@
 
     _socket = [[AsyncSocket alloc]initWithDelegate:self];
     NSError *err = nil; 
-    if(![_socket connectToHost:@"120.27.28.178" onPort:60000 error:&err])
+    if(![_socket connectToHost:HOST_NAME onPort:60000 error:&err])
     {
         NSLog(@"Error: %@", err);
     }
 
-    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendData) userInfo:nil repeats:YES];
+    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendData:) userInfo:nil repeats:YES];
 
     _foodNumberArray = [[NSMutableArray alloc]init];
 
@@ -154,13 +154,16 @@
     [self saveContext];
 }
 
-- (void)sendData {
-    if (_shopID && _shopStr) {
+- (void)sendData:(NSTimer *)timer {
+//    if (_shopID && _shopStr)
+    {
         NSData * outgoingData = [OUT_LOGIN_STR dataUsingEncoding:NSUTF8StringEncoding];
 
         [_socket writeData:outgoingData
                withTimeout:-1
                        tag:202];
+        
+        [timer invalidate];
     }
 }
 
@@ -242,7 +245,7 @@
 }
 
 - (void)onSocket:(AsyncSocket *)sock didWriteDataWithTag:(long)tag {
-
+    NSLog(@"thread(%@),onSocket:%p didWriteDataWithTag:%ld",[[NSThread currentThread] name],sock,tag);
 }
 
 - (void)onSocket:(AsyncSocket *)sock didAcceptNewSocket:(AsyncSocket *)newSocket {
@@ -251,7 +254,8 @@
 
 -(void) onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
-
+    NSString* aStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"===%@",aStr);
 }
 
 #pragma mark - Core Data Saving support

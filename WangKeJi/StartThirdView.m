@@ -176,7 +176,8 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UIView *viewBack = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 40)];
-    UILabel *labelDate = [[UILabel alloc] initWithFrame:CGRectMake(4, 5, 160, 30)];
+    UILabel *labelDate = [[UILabel alloc] initWithFrame:CGRectMake(4, 5, 170, 30)];
+    labelDate.adjustsFontSizeToFitWidth = YES;
     labelDate.text = [NSString stringWithFormat:@"订单日期:%@", _foodArray[section][@"add_time"]];
     labelDate.font = kFont;
     [viewBack addSubview:labelDate];

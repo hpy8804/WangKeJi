@@ -251,7 +251,8 @@
         [(StartThirdView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:2] asynService];
         NSString * bossname = [dataDic objectForKey:@"bossname"];
         NSString * order_id = [dataDic objectForKey:@"orderid"];
-        [AppDelegateInstance.socket writeData:[OUT_ORDER_FROM_STR(bossname, order_id) dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:202];
+        NSString *str = OUT_ORDER_FROM_STR(bossname, order_id);
+        [AppDelegateInstance.socket writeData:[str dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:202];
         
         //跳转到订单列表
         [self removeFromSuperview];
