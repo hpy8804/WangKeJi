@@ -251,7 +251,10 @@
         [(StartThirdView*)[AppDelegateInstance.startVC.viewArray objectAtIndex:2] asynService];
         NSString * bossname = [dataDic objectForKey:@"bossname"];
         NSString * order_id = [dataDic objectForKey:@"orderid"];
-        NSString *str = OUT_ORDER_FROM_STR(bossname, order_id);
+        NSString *order_no = [dataDic objectForKey:@"order_no"];
+
+        NSString *str = [NSString stringWithFormat:OUT_ORDER_FROM_STR, bossname, @"IMEI123456", (AppDelegateInstance.user_ip),
+                         @"IMEI123456",(AppDelegateInstance.shopID), order_id, order_no,AppDelegateInstance.shopID];
         [AppDelegateInstance.socket writeData:[str dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:202];
         
         //跳转到订单列表

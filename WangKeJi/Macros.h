@@ -16,9 +16,11 @@
 #define HEADER_URL @"http://www.wangkeji.com.cn/WebInterface/WebService.asmx"
 #define IMAGE_HEADER_URL @"http://www.wangkeji.com.cn/"
 
-#define OUT_LOGIN_STR ([NSString stringWithFormat:@"<iq xmlns=\"jabber:client\" type=\"get\" id=\"arPFa-21\"><query xmlns=\"jabber:iq:auth\"><username>%@</username><password>1234@%@@%@@isClient</password></query></iq>",AppDelegateInstance.user_id,AppDelegateInstance.shopID,AppDelegateInstance.shopStr])
+#define OUT_REG_STR @"<iq xmlns=\"jabber:client\" type=\"set\" id=\"iRVDg-0\"><query xmlns=\"jabber:iq:register\"><shopid>%@</shopid><username>%@</username><regip>%@</regip><password>%@</password><database>%@</database></query></iq>"
 
-#define OUT_ORDER_FROM_STR(bossname,order_number) ([NSString stringWithFormat:@"<message xmlns=\"jabber:client\" to=\"%@\" type=\"chat\" id=\"ck026-38\"><subject>有一个新订单需要确认！</subject><subject xml:lang=\"zh\">有一个新订单需要确认！</subject><body>确认订单号:%@</body><thread>%@</thread></message>",bossname,order_number,AppDelegateInstance.shopID])
+#define OUT_LOGIN_STR @"<iq xmlns=\"jabber:client\" type=\"get\" id=\"iRVDg-102\"><query xmlns=\"jabber:iq:auth\"><username>%@</username><password>%@@%@@%@@isClient</password></query></iq>"
+
+#define OUT_ORDER_FROM_STR @"<message xmlns=\"jabber:client\" to=\"%@\" type=\"chat\" id=\"iRVDg-228\" from=\"%@@%@/%@@%@@%@\"><subject>有一个新订单需要确认！</subject><subject xml:lang=\"zh\">有一个新订单需要确认！</subject><body>确认订单号:%@</body><thread>%@</thread></message>"
 
 #define GET_VC(self,vc) \
 for (UIView * next = [self superview]; next; next = next.superview) {\

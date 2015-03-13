@@ -14,6 +14,8 @@
 #import <netinet/in.h>
 #import <arpa/inet.h>
 #import <unistd.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
 
 #define HOST_NAME @"121.42.153.54"
 //#define HOST_NAME @"127.0.0.1"
@@ -40,13 +42,14 @@
     }
 
     _socket = [[AsyncSocket alloc]initWithDelegate:self];
+    [_socket setRunLoopModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
     NSError *err = nil; 
     if(![_socket connectToHost:HOST_NAME onPort:60000 error:&err])
     {
         NSLog(@"Error: %@", err);
     }
-
-    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendData:) userInfo:nil repeats:YES];
+    
+//    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendLoginData:) userInfo:nil repeats:YES];
 
     _foodNumberArray = [[NSMutableArray alloc]init];
 
@@ -60,6 +63,7 @@
     _placeArray = [NSArray array];
 
     _shopStr = nil;
+    _user_ip = [self getIPAddress];
 
     _window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
     [_window setBackgroundColor:[UIColor whiteColor]];
@@ -154,16 +158,61 @@
     [self saveContext];
 }
 
+- (NSString *)getIPAddress
+{
+    NSString *address = @"error";
+    struct ifaddrs *interfaces = NULL;
+    struct ifaddrs *temp_addr = NULL;
+    int success = 0;
+    
+    // retrieve the current interfaces - returns 0 on success
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        // Loop through linked list of interfaces
+        temp_addr = interfaces;
+        while (temp_addr != NULL) {
+            if( temp_addr->ifa_addr->sa_family == AF_INET) {
+                // Check if interface is en0 which is the wifi connection on the iPhone
+                if ([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
+                    // Get NSString from C String
+                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+                }
+            }
+            
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    
+    // Free memory
+    freeifaddrs(interfaces);
+    
+    return address;
+}
+
+- (void)sendLoginData:(NSTimer *)time{
+    [self registerUser];
+    [self sendData:time];
+}
+
+- (void)registerUser{
+    if (_shopStr && _shopID) {
+        NSString *strSend = [NSString stringWithFormat:OUT_REG_STR, _shopID, @"IMEI123456", _user_ip, @"123456", _shopStr];
+        NSData *sendData = [strSend dataUsingEncoding:NSUTF8StringEncoding];
+        [_socket writeData:sendData withTimeout:-1 tag:202];
+    }
+}
+
 - (void)sendData:(NSTimer *)timer {
-//    if (_shopID && _shopStr)
+    if (_shopID && _shopStr)
     {
-        NSData * outgoingData = [OUT_LOGIN_STR dataUsingEncoding:NSUTF8StringEncoding];
+        NSString *strSend = [NSString stringWithFormat:OUT_LOGIN_STR, @"IMEI123456", @"123456", _shopID,_shopStr];
+        NSData * outgoingData = [strSend dataUsingEncoding:NSUTF8StringEncoding];
 
         [_socket writeData:outgoingData
                withTimeout:-1
                        tag:202];
         
-        [timer invalidate];
+//        [timer invalidate];
     }
 }
 
@@ -241,6 +290,7 @@
 // 已连接
 - (void)onSocket:(AsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port
 {
+     [sock readDataWithTimeout:-1 tag:202];
     NSLog(@"onSocket:%p didConnectToHost:%@ port:%hu", sock, host, port);
 }
 
@@ -249,13 +299,17 @@
 }
 
 - (void)onSocket:(AsyncSocket *)sock didAcceptNewSocket:(AsyncSocket *)newSocket {
-
+    NSLog(@"didAcceptNewSocket");
 }
 
 -(void) onSocket:(AsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
+//    [sock readDataToData:[AsyncSocket CRLFData] withTimeout:0 tag:tag];
+    
     NSString* aStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSLog(@"===%@",aStr);
+    
+    [sock readDataWithTimeout:-1 tag:tag];
 }
 
 #pragma mark - Core Data Saving support

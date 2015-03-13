@@ -66,8 +66,8 @@
     confirmOrderButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 10, ScreenWidth - 20, 40)];
     [confirmOrderButton setBackgroundImage:[self imageWithColor:[UIColor colorWithRed:239/255.0 green:150/255.0 blue:26/255.0 alpha:1.0]] forState:UIControlStateNormal];
     [confirmOrderButton setBackgroundImage:[self imageWithColor:[UIColor lightGrayColor]] forState:UIControlStateDisabled];
-    [confirmOrderButton addTarget:self action:@selector(confirmOrderButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [confirmOrderButton setTitle:@"确认订单" forState:UIControlStateNormal];
+//    [confirmOrderButton addTarget:self action:@selector(confirmOrderButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [confirmOrderButton setTitle:@"" forState:UIControlStateNormal];
     [self.view addSubview:confirmOrderButton];
 
     _tableView = [[UITableView alloc] initWithFrame:CGRectMake(10, confirmOrderButton.frame.origin.y + confirmOrderButton.frame.size.height + 10, ScreenWidth - 20, (self.view.frame.size.height-(confirmOrderButton.frame.origin.y + confirmOrderButton.frame.size.height + 10)))];
@@ -119,19 +119,64 @@
         NSData * data = [xml dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary * dataDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         _dataDic = [NSDictionary dictionaryWithDictionary:[[NSArray arrayWithArray:[dataDic objectForKey:@"data"]] objectAtIndex:0]];
-        NSArray * paymentArray = [NSArray arrayWithObjects:@"待确认", @"已确认", nil];
+        NSString *orderStatus = [self returnOrderStatusWithStatus:_dataDic[@"status"] payment_status:_dataDic[@"payment_status"] express_status:_dataDic[@"express_status"]];
         _tableDataArray = [NSArray arrayWithObjects:
                            [_dataDic objectForKey:@"order_no"],
                            [_dataDic objectForKey:@"accept_name"],
                            [_dataDic objectForKey:@"address"],
                            [_dataDic objectForKey:@"mobile"],
-                           [paymentArray objectAtIndex:[[_dataDic objectForKey:@"payment_status"] integerValue]],
+                           orderStatus,
                            @"",
                            @"",
                            [_dataDic objectForKey:@"order_amount"], nil];
+        [confirmOrderButton setTitle:orderStatus forState:UIControlStateNormal];
         [_tableView reloadData];
     }
     
+}
+
+- (NSString *)returnOrderStatusWithStatus:(NSString *)status payment_status:(NSString *)payment_status express_status:(NSString *)express_status{
+    NSString *orderStatus = nil;
+    switch ([status intValue]) {
+        case 1:
+        {
+            if ([payment_status intValue] > 0) {
+                orderStatus = @"待付款";
+            }else{
+                orderStatus = @"待确认";
+            }
+        }
+            break;
+        case 2:
+        {
+            if ([express_status intValue] > 1) {
+                orderStatus = @"已派送";
+            }else {
+                orderStatus = @"待派送";
+            }
+        }
+            break;
+        case 3:
+        {
+            orderStatus = @"交易完成";
+        }
+            break;
+        case 4:
+        {
+            orderStatus = @"已取消";
+        }
+            break;
+        case 5:
+        {
+            orderStatus = @"已作废";
+        }
+            break;
+            
+        default:
+            break;
+    }
+    
+    return orderStatus;
 }
 
 -(void)finishFailRequest:(NSError*)error {
