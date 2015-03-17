@@ -27,7 +27,9 @@
 #define kDefaultPassword @"123456"
 
 @interface AppDelegate ()
-
+{
+    NSTimer *timeLogin;
+}
 @end
 
 @implementation AppDelegate
@@ -54,11 +56,11 @@
         NSLog(@"Error: %@", err);
     }
     
-    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendLoginData:) userInfo:nil repeats:YES];
+    timeLogin = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendLoginData:) userInfo:nil repeats:YES];
 
     _foodNumberArray = [[NSMutableArray alloc]init];
 
-    _tasteArray = [NSArray arrayWithObjects:@"不辣", @"微辣", @"中辣", @"特辣", nil];
+    _tasteArray = [NSArray arrayWithObjects:@"不辣", @"微辣", @"中辣", @"重辣", nil];
 
     _keyArray = [NSArray arrayWithObjects:@"title", @"zhaiyao", @"", @"sell_price", nil];
 
@@ -147,10 +149,30 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    if (timeLogin && [timeLogin isValid]) {
+        [timeLogin invalidate];
+        timeLogin = nil;
+    }
+    [_socket disconnect];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    
+    if (timeLogin && [timeLogin isValid]) {
+        [timeLogin invalidate];
+        timeLogin = nil;
+    }
+    _socket = [[AsyncSocket alloc]initWithDelegate:self];
+    [_socket setRunLoopModes:[NSArray arrayWithObject:NSRunLoopCommonModes]];
+    NSError *err = nil;
+    if(![_socket connectToHost:HOST_NAME onPort:60000 error:&err])
+    {
+        NSLog(@"Error: %@", err);
+    }
+    
+    timeLogin = [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendLoginData:) userInfo:nil repeats:YES];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -223,8 +245,6 @@
         [_socket writeData:outgoingData2
                withTimeout:-1
                        tag:202];
-        
-//        [timer invalidate];
     }
 }
 
@@ -232,6 +252,7 @@
 {
     return UIInterfaceOrientationMaskPortrait;
 }
+
 
 #pragma mark - Core Data stack
 
