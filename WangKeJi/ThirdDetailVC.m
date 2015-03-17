@@ -11,6 +11,7 @@
 #import "FootCell.h"
 #import "UIWindow+YzdHUD.h"
 #import "StartVC.h"
+#import "WKJUtil.h"
 
 @interface ThirdDetailVC ()<UITableViewDataSource,UITableViewDelegate>
 {
@@ -119,7 +120,7 @@
         NSData * data = [xml dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary * dataDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
         _dataDic = [NSDictionary dictionaryWithDictionary:[[NSArray arrayWithArray:[dataDic objectForKey:@"data"]] objectAtIndex:0]];
-        NSString *orderStatus = [self returnOrderStatusWithStatus:_dataDic[@"status"] payment_status:_dataDic[@"payment_status"] express_status:_dataDic[@"express_status"]];
+        NSString *orderStatus = [WKJUtil returnOrderStatusWithStatus:_dataDic[@"status"] payment_status:_dataDic[@"payment_status"] express_status:_dataDic[@"express_status"]];
         _tableDataArray = [NSArray arrayWithObjects:
                            [_dataDic objectForKey:@"order_no"],
                            [_dataDic objectForKey:@"accept_name"],
@@ -133,50 +134,6 @@
         [_tableView reloadData];
     }
     
-}
-
-- (NSString *)returnOrderStatusWithStatus:(NSString *)status payment_status:(NSString *)payment_status express_status:(NSString *)express_status{
-    NSString *orderStatus = nil;
-    switch ([status intValue]) {
-        case 1:
-        {
-            if ([payment_status intValue] > 0) {
-                orderStatus = @"待付款";
-            }else{
-                orderStatus = @"待确认";
-            }
-        }
-            break;
-        case 2:
-        {
-            if ([express_status intValue] > 1) {
-                orderStatus = @"已派送";
-            }else {
-                orderStatus = @"待派送";
-            }
-        }
-            break;
-        case 3:
-        {
-            orderStatus = @"交易完成";
-        }
-            break;
-        case 4:
-        {
-            orderStatus = @"已取消";
-        }
-            break;
-        case 5:
-        {
-            orderStatus = @"已作废";
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-    return orderStatus;
 }
 
 -(void)finishFailRequest:(NSError*)error {

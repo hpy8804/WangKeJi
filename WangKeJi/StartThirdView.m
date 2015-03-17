@@ -10,6 +10,7 @@
 #import "SoapHelper.h"
 #import "FootCell.h"
 #import "ThirdDetailVC.h"
+#import "WKJUtil.h"
 
 #define kFont [UIFont systemFontOfSize:12.0f]
 
@@ -184,7 +185,7 @@
     
     UILabel *labelStatus = [[UILabel alloc] initWithFrame:CGRectMake(CGRectGetMaxX(labelDate.frame)+5, 5, 50, 30)];
     labelStatus.textColor = [UIColor redColor];
-    NSString *strStatus = [self returnOrderStatusWithStatus:_foodArray[section][@"status"] payment_status:_foodArray[section][@"payment_status"] express_status:_foodArray[section][@"express_status"]];
+    NSString *strStatus = [WKJUtil returnOrderStatusWithStatus:_foodArray[section][@"status"] payment_status:_foodArray[section][@"payment_status"] express_status:_foodArray[section][@"express_status"]];
     labelStatus.textAlignment = NSTextAlignmentCenter;
     labelStatus.text = strStatus;
     labelStatus.font = kFont;
@@ -222,50 +223,6 @@
     viewBack.backgroundColor = [UIColor whiteColor];
     
     return viewBack;
-}
-
-- (NSString *)returnOrderStatusWithStatus:(NSString *)status payment_status:(NSString *)payment_status express_status:(NSString *)express_status{
-    NSString *orderStatus = nil;
-    switch ([status intValue]) {
-        case 1:
-        {
-            if ([payment_status intValue] > 0) {
-                orderStatus = @"待付款";
-            }else{
-                orderStatus = @"待确认";
-            }
-        }
-            break;
-        case 2:
-        {
-            if ([express_status intValue] > 1) {
-                orderStatus = @"已派送";
-            }else {
-                orderStatus = @"待派送";
-            }
-        }
-            break;
-        case 3:
-        {
-            orderStatus = @"交易完成";
-        }
-            break;
-        case 4:
-        {
-            orderStatus = @"已取消";
-        }
-            break;
-        case 5:
-        {
-            orderStatus = @"已作废";
-        }
-            break;
-            
-        default:
-            break;
-    }
-    
-    return orderStatus;
 }
 
 @end

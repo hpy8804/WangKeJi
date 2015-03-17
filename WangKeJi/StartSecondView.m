@@ -160,7 +160,7 @@
     [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:[[[_cellArray objectAtIndex:1] textField] text],@"address", nil]];
     [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"",@"message", nil]];
     [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:[self getShopcart],@"shopcart", nil]];
-    [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"0",@"Userid", nil]];
+    [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"359",@"Userid", nil]];
     NSString * soapMsg = [SoapHelper arrayToDefaultSoapMessage:arr methodName:@"SubmitOrder"];
     [_helper asynServiceMethod:@"SubmitOrder" soapMessage:soapMsg];
 }
@@ -253,8 +253,8 @@
         NSString * order_id = [dataDic objectForKey:@"orderid"];
         NSString *order_no = [dataDic objectForKey:@"order_no"];
 
-        NSString *str = [NSString stringWithFormat:OUT_ORDER_FROM_STR, bossname, @"IMEI123456", (AppDelegateInstance.user_ip),
-                         @"IMEI123456",(AppDelegateInstance.shopID), order_id, order_no,AppDelegateInstance.shopID];
+        NSString *str = [NSString stringWithFormat:OUT_ORDER_FROM_STR, bossname, AppDelegateInstance.user_id, (AppDelegateInstance.user_ip),
+                         AppDelegateInstance.user_id,(AppDelegateInstance.shopID), order_id, order_no,AppDelegateInstance.shopID];
         [AppDelegateInstance.socket writeData:[str dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:202];
         
         //跳转到订单列表

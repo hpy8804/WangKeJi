@@ -30,6 +30,7 @@
 @property (strong, nonatomic) NSString * password;
 @property (strong, nonatomic) NSString *user_ip;
 @property (nonatomic, strong) NSMutableArray * titleArray;
+@property (strong, nonatomic) NSString *order_no;
 //@property (nonatomic, readonly) XMPPStream * xmppStream;
 //@property (nonatomic, strong) XMPPOutgoingFileTransfer * xmppSend;
 @property (strong, nonatomic) AsyncSocket * socket;

@@ -16,10 +16,15 @@
 #import <unistd.h>
 #include <ifaddrs.h>
 #include <arpa/inet.h>
+#import "WKJUtil.h"
+#import "ThirdDetailVC.h"
+#import "UIDevice+IdentifierAddition.h"
+
 
 #define HOST_NAME @"121.42.153.54"
 //#define HOST_NAME @"127.0.0.1"
 //#define HOST_NAME @"120.27.28.178"
+#define kDefaultPassword @"123456"
 
 @interface AppDelegate ()
 
@@ -37,7 +42,7 @@
         _user_id = [[NSUserDefaults standardUserDefaults] objectForKey:@"user_id"];
     }
     else {
-        _user_id = [NSString stringWithFormat:@"%i",[self getRandomNumber:1000000 to:9999999]];
+        _user_id = [[UIDevice currentDevice] uniqueDeviceIdentifier];
         [[NSUserDefaults standardUserDefaults] setObject:_user_id forKey:@"user_id"];
     }
 
@@ -49,7 +54,7 @@
         NSLog(@"Error: %@", err);
     }
     
-//    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendLoginData:) userInfo:nil repeats:YES];
+    [NSTimer scheduledTimerWithTimeInterval:5.0f target:self selector:@selector(sendLoginData:) userInfo:nil repeats:YES];
 
     _foodNumberArray = [[NSMutableArray alloc]init];
 
@@ -196,7 +201,7 @@
 
 - (void)registerUser{
     if (_shopStr && _shopID) {
-        NSString *strSend = [NSString stringWithFormat:OUT_REG_STR, _shopID, @"IMEI123456", _user_ip, @"123456", _shopStr];
+        NSString *strSend = [NSString stringWithFormat:OUT_REG_STR, _shopID, _user_id, _user_ip, kDefaultPassword, _shopStr];
         NSData *sendData = [strSend dataUsingEncoding:NSUTF8StringEncoding];
         [_socket writeData:sendData withTimeout:-1 tag:202];
     }
@@ -205,10 +210,17 @@
 - (void)sendData:(NSTimer *)timer {
     if (_shopID && _shopStr)
     {
-        NSString *strSend = [NSString stringWithFormat:OUT_LOGIN_STR, @"IMEI123456", @"123456", _shopID,_shopStr];
+        NSString *strSend = [NSString stringWithFormat:OUT_LOGIN_STR, _user_id, kDefaultPassword, _shopID,_shopStr];
         NSData * outgoingData = [strSend dataUsingEncoding:NSUTF8StringEncoding];
 
         [_socket writeData:outgoingData
+               withTimeout:-1
+                       tag:202];
+        
+        NSString *strSend2 = [NSString stringWithFormat:OUT_LOGIN_STR2, _user_id, kDefaultPassword, _shopID,_shopStr];
+        NSData * outgoingData2 = [strSend2 dataUsingEncoding:NSUTF8StringEncoding];
+        
+        [_socket writeData:outgoingData2
                withTimeout:-1
                        tag:202];
         
@@ -307,7 +319,18 @@
 //    [sock readDataToData:[AsyncSocket CRLFData] withTimeout:0 tag:tag];
     
     NSString* aStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"===%@",aStr);
+    NSString *subject = [WKJUtil obtainValueFromString:aStr withIdentifier:@"subject"];
+    NSString *order = [WKJUtil obtainValueFromString:aStr withIdentifier:@"body"];
+    NSRange orderRange = [order rangeOfString:@"订单号:"];
+    if (orderRange.location != NSNotFound) {
+        _order_no = [order substringFromIndex:orderRange.location+orderRange.length];
+    }
+
+    if (subject.length > 0) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:subject delegate:self cancelButtonTitle:@"忽略" otherButtonTitles:@"查看", nil];
+        [alertView show];
+    }
+    
     
     [sock readDataWithTimeout:-1 tag:tag];
 }
@@ -326,5 +349,17 @@
     }
 }
 
+
+#pragma mark - UIAlertView delegate methods
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 1) {
+        //查看详细订单
+        NSLog(@"查看订单:%@", _order_no);
+        ThirdDetailVC * thirdDetailVC = [[ThirdDetailVC alloc] init];
+        thirdDetailVC.order_id = _order_no;
+        [self.startVC.navigationController pushViewController:thirdDetailVC animated:YES];
+    }
+}
 
 @end
