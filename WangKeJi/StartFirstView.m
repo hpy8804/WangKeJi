@@ -113,6 +113,28 @@
     [manager stopUpdatingLocation];
 
     NSString * url = [NSString stringWithFormat:@"%@/getShopName?lat=%f&lon=%f",HEADER_URL,newLocation.coordinate.latitude,newLocation.coordinate.longitude];
+    
+    // 获取当前所在的城市名
+    CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+    //根据经纬度反向地理编译出地址信息
+    [geocoder reverseGeocodeLocation:newLocation completionHandler:^(NSArray *array, NSError *error)
+     {
+         if (array.count > 0)
+         {
+             CLPlacemark *placemark = [array objectAtIndex:0];
+                          //获取城市
+             NSString *city = placemark.locality;
+             NSString *province = placemark.administrativeArea;
+             if (!city) {
+                 city = placemark.administrativeArea;
+             }
+             NSUserDefaults *curDefault = [NSUserDefaults standardUserDefaults];
+             [curDefault setValue:province forKey:@"WKJ_province"];
+             [curDefault setValue:city forKey:@"WKJ_City"];
+             [curDefault synchronize];
+             
+         }
+     }];
 
     AFHTTPRequestOperationManager * afManager = [AFHTTPRequestOperationManager manager];
     afManager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/xml"];

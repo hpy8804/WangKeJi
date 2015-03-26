@@ -48,9 +48,10 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"< 返回" style:UIBarButtonItemStylePlain target:self action:@selector(backView)];
     [self.navigationItem.leftBarButtonItem setTintColor:[UIColor whiteColor]];
 
+    NSUserDefaults *curDefault = [NSUserDefaults standardUserDefaults];
     NSMutableArray *arr=[NSMutableArray array];
-    [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"",@"privince", nil]];
-    [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"",@"city", nil]];
+    [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:[curDefault objectForKey:@"WKJ_province"],@"privince", nil]];
+    [arr addObject:[NSDictionary dictionaryWithObjectsAndKeys:[curDefault objectForKey:@"WKJ_City"],@"city", nil]];
     NSString *soapMsg=[SoapHelper arrayToDefaultSoapMessage:arr methodName:@"getShopList"];
     [_helper asynServiceMethod:@"getShopList" soapMessage:soapMsg];
 }
